@@ -46,7 +46,6 @@ df1 = pd.read_json("./match_1.json")
 df2 = pd.read_json("./match_2.json")
 df = pd.concat([df1, df2])
 df = df.reset_index(drop=True)
-df
 ## 1.1.
 st.subheader("1.1. Analysis of gait length")
 
@@ -218,7 +217,8 @@ if generate_game :
             generated_norm_scaled = norm_model.predict(n=128, series=series_dict[label])
             series_dict[label] = generated_norm_scaled# add some changes for the next gaits
             
-            generated_norm = norm_scaler.inverse_transform(generated_norm_scaled).values()
+            generated_norm = norm_scaler.inverse_transform(generated_norm_scaled).values().reshape(-1).tolist()
+            # generated_norm = norm_scaler.inverse_transform(generated_norm_scaled).values()
              
             # Find the index of the first occurrence of 0
             # first_zero_index = np.argmax(generated_norm <= 0)
@@ -231,7 +231,7 @@ if generate_game :
                 'label':label
             })
             
-            st.write(generated_norm)
+            # st.write(generated_norm)
 
             
             game_length_sec = game_length_sec - len(generated_norm)*0.02
@@ -247,8 +247,11 @@ if generate_game :
 if st.session_state['predictions'] != []:
 
     output_json = json.dumps(st.session_state['predictions'])
+    
+    st.write("Output : ")
+    st.write(st.session_state['predictions'])
 
-    st.json(output_json, expanded=True)
+    # st.json(output_json, expanded=False)
 
     st.download_button(
         label = "Download output as json",
